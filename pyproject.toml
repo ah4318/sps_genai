@@ -1,12 +1,16 @@
 [project]
-name = "sps-genai"
+name = "sps-genai-cnn"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.12"
+description = "FastAPI app with Bigram text generator and CNN classifier"
+requires-python = ">=3.10"
+
 dependencies = [
-    "fastapi[standard]>=0.117.1",
-    "pydantic>=2.11.9",
-    "spacy>=3.8.7",
-    "uvicorn>=0.36.0",
+  "fastapi[standard]>=0.115.0",
+  "pydantic>=2.8.0",
+  "torch>=2.2.0",
+  "torchvision>=0.17.0",
+  "pillow>=10.0.0"
 ]
+
+[tool.uv.sources]
+sps-genai-cnn = { path = "app" }
