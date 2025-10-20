@@ -1,42 +1,42 @@
-cat > .gitignore <<EOL
 # macOS
 .DS_Store
 
 # R
 .Rhistory
 
-# Python
+# Python cache and bytecode
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Virtual environments
-.venv/
-.env/
-
-# Editors
-.vscode/
-.idea/
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-# Local config
-.python-version
-
-# Ignore accidental root files
-main.py
-embedding_model.py
-EOL
-# Python-generated files
-__pycache__/
-*.py[oc]
+# Build artifacts
 build/
 dist/
 wheels/
 *.egg-info
 
 # Virtual environments
-.venv
+.venv/
+.env/
+
+# Editors and IDEs
+.vscode/
+.idea/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Local config
+.python-version
+
+# Large data files and model weights
+data/
+*.tar.gz
+models/*.pt
+
+# Docker
+*.log
+*.pid
+
