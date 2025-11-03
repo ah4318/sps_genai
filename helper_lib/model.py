@@ -140,3 +140,56 @@ def get_model(
         return ConvVAE(in_ch=in_channels, image_size=image_size, latent_dim=latent_dim)
     else:
         raise ValueError(f"Unknown model_name: {model_name}")
+import torch
+import torch.nn as nn
+
+class MNISTGenerator(nn.Module):
+    def __init__(self, z_dim=100):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(z_dim, 128*7*7),
+            nn.BatchNorm1d(128*7*7),
+            nn.ReLU(True),
+            nn.Unflatten(1, (128, 7, 7)),
+            nn.ConvTranspose2d(128, 64, 4, stride=2, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(64, 1, 4, stride=2, padding=1),
+            nn.Tanh()
+        )
+
+    def forward(self, z):
+        return self.net(z)
+
+
+class MNISTDiscriminator(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(1, 64, 4, stride=2, padding=1),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(64, 128, 4, stride=2, padding=1),
+            nn.BatchNorm2d(128),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Flatten(),
+            nn.Linear(128*7*7, 1)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
+class MNIST_GAN(nn.Module):
+    def __init__(self, z_dim=100):
+        super().__init__()
+        self.z_dim = z_dim
+        self.G = MNISTGenerator(z_dim)
+        self.D = MNISTDiscriminator()
+
+
+def get_model(model_name: str):
+    model_name = model_name.lower()
+    if model_name == "gan":
+        return MNIST_GAN(z_dim=100)
+    raise ValueError(f"Unknown model_name: {model_name}")
+

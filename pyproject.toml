@@ -9,7 +9,9 @@ dependencies = [
   "pydantic>=2.8.0",
   "torch>=2.2.0",
   "torchvision>=0.17.0",
-  "pillow>=10.0.0"
+  "pillow>=10.0.0",
+  "tqdm>=4.67.1",
+  "matplotlib>=3.10.7",
 ]
 
 [tool.uv.sources]

@@ -48,3 +48,17 @@ def generate_samples(
         print(f"Saved samples to {save_path}")
     plt.show()
 
+from torchvision.utils import make_grid
+
+@torch.no_grad()
+def generate_samples(model, device="cpu", num_samples=16):
+    device = torch.device(device)
+    G = model.G.to(device).eval()
+    z_dim = getattr(model, "z_dim", 100)
+    z = torch.randn(num_samples, z_dim, device=device)
+    imgs = G(z).cpu()
+    imgs = (imgs + 1) / 2.0
+    grid = make_grid(imgs, nrow=int(num_samples**0.5))
+    plt.imshow(grid.permute(1, 2, 0).squeeze(), cmap="gray")
+    plt.axis("off")
+    plt.show()

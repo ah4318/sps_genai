@@ -78,3 +78,43 @@ def train_vae_model(
         print(f"[VAE][Train] Epoch {epoch}: loss={total_loss/total:.4f}")
 
     return model
+import torch
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+
+def train_gan(model, batch_size=128, epochs=5, lr=2e-4, device="cpu"):
+    device = torch.device(device)
+    G, D = model.G.to(device), model.D.to(device)
+    tfm = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5,), (0.5,))
+    ])
+    ds = datasets.MNIST(root="data", train=True, download=True, transform=tfm)
+    loader = DataLoader(ds, batch_size=batch_size, shuffle=True, num_workers=2, drop_last=True)
+
+    opt_G = torch.optim.Adam(G.parameters(), lr=lr, betas=(0.5, 0.999))
+    opt_D = torch.optim.Adam(D.parameters(), lr=lr, betas=(0.5, 0.999))
+    bce = torch.nn.BCEWithLogitsLoss()
+    z_dim = model.z_dim
+
+    for epoch in range(1, epochs+1):
+        for real, _ in loader:
+            real = real.to(device)
+            z = torch.randn(real.size(0), z_dim, device=device)
+            fake = G(z)
+
+            logits_real = D(real)
+            loss_real = bce(logits_real, torch.ones_like(logits_real))
+            logits_fake = D(fake.detach())
+            loss_fake = bce(logits_fake, torch.zeros_like(logits_fake))
+            loss_D = loss_real + loss_fake
+            opt_D.zero_grad(); loss_D.backward(); opt_D.step()
+
+            logits_fake = D(fake)
+            loss_G = bce(logits_fake, torch.ones_like(logits_fake))
+            opt_G.zero_grad(); loss_G.backward(); opt_G.step()
+
+        print(f"Epoch {epoch}/{epochs} | D: {loss_D.item():.4f} | G: {loss_G.item():.4f}")
+
+    return model
+
