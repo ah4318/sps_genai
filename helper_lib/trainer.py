@@ -118,3 +118,24 @@ def train_gan(model, batch_size=128, epochs=5, lr=2e-4, device="cpu"):
 
     return model
 
+import torch
+from tqdm import tqdm
+
+def train_diffusion(model, data_loader, criterion, optimizer, device='cpu', epochs=3):
+    model.to(device)
+    model.train()
+    for epoch in range(epochs):
+        epoch_loss = 0.0
+        for imgs, _ in tqdm(data_loader, desc=f"Epoch {epoch+1}/{epochs}"):
+            imgs = imgs.to(device)
+            noise = torch.randn_like(imgs)
+            noisy_imgs = imgs + 0.1 * noise  # small forward diffusion step
+            outputs = model(noisy_imgs)
+            loss = criterion(outputs, imgs)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            epoch_loss += loss.item()
+        print(f"Epoch {epoch+1}: Loss = {epoch_loss / len(data_loader):.4f}")
+    return model
+

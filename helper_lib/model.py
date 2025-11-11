@@ -193,3 +193,38 @@ def get_model(model_name: str):
         return MNIST_GAN(z_dim=100)
     raise ValueError(f"Unknown model_name: {model_name}")
 
+# --- Diffusion Model (Simplified UNet-style) ---
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class SimpleDiffusionModel(nn.Module):
+    """
+    A lightweight UNet-like network for Diffusion on MNIST-size images.
+    """
+    def __init__(self, in_channels=1, base_channels=64):
+        super().__init__()
+        self.encoder = nn.Sequential(
+            nn.Conv2d(in_channels, base_channels, 3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(base_channels, base_channels, 3, padding=1),
+            nn.ReLU()
+        )
+        self.decoder = nn.Sequential(
+            nn.ConvTranspose2d(base_channels, base_channels, 3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(base_channels, in_channels, 3, padding=1)
+        )
+
+    def forward(self, x):
+        h = self.encoder(x)
+        out = self.decoder(h)
+        return out
+
+
+def get_model(model_name):
+    model_name = model_name.lower()
+    if model_name == "diffusion":
+        return SimpleDiffusionModel()
+    raise ValueError(f"Unknown model name: {model_name}")
+

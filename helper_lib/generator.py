@@ -62,3 +62,23 @@ def generate_samples(model, device="cpu", num_samples=16):
     plt.imshow(grid.permute(1, 2, 0).squeeze(), cmap="gray")
     plt.axis("off")
     plt.show()
+
+import torch
+import matplotlib.pyplot as plt
+from torchvision.utils import make_grid
+
+@torch.no_grad()
+def generate_samples(model, device='cpu', num_samples=16, diffusion_steps=100):
+    """
+    Reverse diffusion: start from noise and iteratively denoise.
+    """
+    model.to(device).eval()
+    x = torch.randn(num_samples, 1, 28, 28, device=device)
+    for step in range(diffusion_steps):
+        x = model(x)  # denoise slightly each step
+    x = (x - x.min()) / (x.max() - x.min() + 1e-8)
+    grid = make_grid(x.cpu(), nrow=int(num_samples ** 0.5))
+    plt.imshow(grid.permute(1, 2, 0))
+    plt.axis("off")
+    plt.show()
+
