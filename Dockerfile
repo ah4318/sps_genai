@@ -1,25 +1,24 @@
 # === Base image ===
 FROM python:3.12-slim-bookworm
 
-# === Install dependencies ===
+# === Working directory ===
 WORKDIR /code
 
-# Install system deps
+# === Install system dependencies ===
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency files
-COPY requirements.txt /code/
+# === Copy everything into the container ===
+COPY . /code
 
-# Install Python dependencies via pip (simpler than uv)
+# === Install Python dependencies ===
 RUN pip install --no-cache-dir -r requirements.txt
 
-# === Copy app files ===
-COPY ./app /code/app
-COPY ./models /code/models
+# === Ensure Python can import helper_lib & app ===
+ENV PYTHONPATH="/code"
 
-# Expose the port
+# === Expose port ===
 EXPOSE 80
 
-# === Run FastAPI ===
-CMD ["fastapi", "run", "app/main.py", "--port", "80"]
+# === Run FastAPI using uvicorn ===
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
