@@ -3,13 +3,18 @@ from pydantic import BaseModel
 from app.bigram_model import BigramModel
 from app.classifier import predict_image_bytes  # <-- new import
 from helper_lib.model import get_model
-from helper_lib.trainer import train_gan
+from helper_lib.trainer import train_gan_model
 from helper_lib.generator import generate_samples
 import io
 import base64
 import matplotlib.pyplot as plt
+from helper_lib import (
+    get_model, get_data_loader,
+    generate_diffusion_samples, generate_ebm_samples
+)
+import torch
 
-app = FastAPI(title="Bigram + CNN API")
+app = FastAPI(title="Bigram + CNN + Diffusion + EBM API")
 
 # --- Bigram part ---
 corpus = [
@@ -67,3 +72,32 @@ async def generate_gan_samples(num_samples: int = 16):
 @app.get("/")
 def home():
     return {"message": "API with Bigram + CNN Classifier"}
+
+# ============================================================
+# DIFFUSION
+# ============================================================
+
+@app.get("/diffusion/generate", tags=["diffusion"])
+def diffusion_generate(num_samples: int = 16):
+    """
+    Generate images using the Diffusion model.
+    Returns a Python list (which FastAPI auto-converts to JSON).
+    """
+    model = get_model("diffusion")
+    samples = generate_diffusion_samples(model, num_samples=num_samples)
+    return {"samples": samples.tolist()}
+
+
+# ============================================================
+# EBM
+# ============================================================
+
+@app.get("/ebm/generate", tags=["ebm"])
+def ebm_generate(num_samples: int = 16):
+    """
+    Generate images using the EBM sampler.
+    Returns a Python list (auto-JSON).
+    """
+    model = get_model("ebm")
+    samples = generate_ebm_samples(model, num_samples=num_samples)
+    return {"samples": samples.tolist()}

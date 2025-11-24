@@ -2,6 +2,8 @@ import torch.nn as nn
 from typing import Literal
 import torch
 import torch.nn.functional as F
+from .diffusion import SimpleDiffusion
+from .ebm import SimpleEBM
 
 class FCNN(nn.Module):
     def __init__(self, in_dim: int = 28*28, num_classes: int = 10, hidden: int = 256):
@@ -45,12 +47,33 @@ class EnhancedCNN(nn.Module):
         )
     def forward(self, x): return self.classifier(self.features(x))
 
-def get_model(model_name: Literal["FCNN","CNN","EnhancedCNN"]="CNN",
-              num_classes: int = 10, in_channels: int = 3) -> nn.Module:
+
+def get_model(
+    model_name: Literal["FCNN", "CNN", "EnhancedCNN", "Diffusion", "EBM"] = "CNN",
+    num_classes: int = 10,
+    in_channels: int = 1,
+) -> nn.Module:
     name = model_name.upper()
-    if name == "FCNN": return FCNN(28*28, num_classes)
-    if name == "CNN": return SimpleCNN(in_channels, num_classes)
-    if name == "ENHANCEDCNN": return EnhancedCNN(in_channels, num_classes)
+
+    if name == "FCNN":
+        return FCNN(28 * 28, num_classes)
+
+    if name == "CNN":
+        return SimpleCNN(in_channels, num_classes)
+
+    if name == "ENHANCEDCNN":
+        return EnhancedCNN(in_channels, num_classes)
+
+    # NEW: diffusion generator
+    if name == "DIFFUSION":
+        # adapt the arguments to however you defined your UNet
+        return DiffusionUNet(in_channels=in_channels, out_channels=1)
+
+    # NEW: energy-based model
+    if name == "EBM":
+        # again, adapt to your EnergyModel __init__
+        return EnergyModel(in_channels=in_channels)
+
     raise ValueError(f"Unknown model_name: {model_name}")
 
 
@@ -228,3 +251,63 @@ def get_model(model_name):
         return SimpleDiffusionModel()
     raise ValueError(f"Unknown model name: {model_name}")
 
+# ---- Tiny UNet-ish backbone for Diffusion (MNIST-like 1x28x28) ----
+class DoubleConv(nn.Module):
+    def __init__(self, in_c, out_c):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(in_c, out_c, 3, padding=1), nn.GroupNorm(8, out_c), nn.SiLU(),
+            nn.Conv2d(out_c, out_c, 3, padding=1), nn.GroupNorm(8, out_c), nn.SiLU(),
+        )
+    def forward(self, x): return self.net(x)
+
+class Down(nn.Module):
+    def __init__(self, in_c, out_c):
+        super().__init__()
+        self.pool = nn.MaxPool2d(2)
+        self.block = DoubleConv(in_c, out_c)
+    def forward(self, x): return self.block(self.pool(x))
+
+class Up(nn.Module):
+    def __init__(self, in_c, out_c):
+        super().__init__()
+        self.up = nn.Upsample(scale_factor=2, mode='nearest')
+        self.block = DoubleConv(in_c, out_c)
+    def forward(self, x, skip):
+        x = self.up(x)
+        x = torch.cat([x, skip], dim=1)
+        return self.block(x)
+
+class UNetTiny(nn.Module):
+    """Predicts noise eps(x_t, t)."""
+    def __init__(self, in_ch=1, base=32):
+        super().__init__()
+        self.inc   = DoubleConv(in_ch, base)
+        self.down1 = Down(base, base*2)
+        self.mid   = DoubleConv(base*2, base*2)
+        self.up1   = Up(base*2 + base, base)
+        self.outc  = nn.Conv2d(base, in_ch, 1)
+
+    def forward(self, x, t_embed=None):
+        # t_embed is unused in this tiny demo; add FiLM/cond if you like
+        x1 = self.inc(x)
+        x2 = self.down1(x1)
+        xm = self.mid(x2)
+        xu = self.up1(xm, x1)
+        return self.outc(xu)
+
+# ---- Simple EBM that maps image->scalar energy ----
+class EnergyNet(nn.Module):
+    def __init__(self, in_ch=1):
+        super().__init__()
+        self.f = nn.Sequential(
+            nn.Conv2d(in_ch, 32, 5, stride=2, padding=2), nn.SiLU(),
+            nn.Conv2d(32, 64, 5, stride=2, padding=2),   nn.SiLU(),
+            nn.Conv2d(64, 128, 3, stride=2, padding=1),  nn.SiLU(),
+            nn.AdaptiveAvgPool2d(1),
+        )
+        self.head = nn.Linear(128, 1)
+
+    def forward(self, x):
+        h = self.f(x).flatten(1)
+        return self.head(h).squeeze(1)  # (B,)

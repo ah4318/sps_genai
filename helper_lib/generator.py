@@ -82,3 +82,10 @@ def generate_samples(model, device='cpu', num_samples=16, diffusion_steps=100):
     plt.axis("off")
     plt.show()
 
+def generate_diffusion_samples(num_samples=16):
+    model = get_model("DIFFUSION")
+    return run_diffusion(model, num_samples)
+
+def generate_ebm_samples(num_samples=16):
+    model = get_model("EBM")
+    return run_ebm(model, num_samples)

@@ -51,37 +51,35 @@ Endpoint:
 
 GET /ebm/generate
 
-🧩 API Endpoints Summary
+🌐 API Endpoints Summary
 Category	Method	Endpoint	Description
 Text	POST	/generate	Generate text with Bigram model
 Embedding	POST	/embedding	Get embedding for a word
 Similarity	POST	/similarity	Compute similarity between two words
-Classification	POST	/classify	Classify uploaded image
-GAN	POST	/gan/train	Train GAN
+Classification	POST	/classify	Classify an uploaded image (CNN)
+GAN	POST	/gan/train	Train GAN model
 GAN	GET	/gan/generate	Generate GAN samples
-Diffusion	GET	/diffusion/generate	Generate images via diffusion sampling
-EBM	GET	/ebm/generate	Generate images via EBM sampling
-📁 Project Structure
+Diffusion	GET	/diffusion/generate	Generate images using Diffusion model
+EBM	GET	/ebm/generate	Generate images using EBM sampler
+
 sps_genai/
-│
 ├── app/
-│   ├── main.py                # FastAPI routes
-│   ├── bigram_model.py
-│   ├── classifier.py
-│
+│   └── main.py                 # FastAPI routes
+├── bigram_model.py             # Bigram text model
+├── classifier.py               # CNN classifier
 ├── helper_lib/
-│   ├── model.py               # All model definitions (CNN, VAE, GAN, Diffusion, EBM)
-│   ├── trainer.py             # Training loops
-│   ├── generator.py           # Sampling utilities
-│   ├── diffusion.py           # Diffusion sampler
-│   ├── ebm.py                 # EBM sampler
-│   ├── utils.py               # Helpers
-│   ├── data_loader.py
-│
-├── models/                    # Saved checkpoints
+│   ├── model.py                # CNN, VAE, GAN, Diffusion, EBM definitions
+│   ├── trainer.py              # Training loops
+│   ├── generator.py            # Sampling utilities
+│   ├── diffusion.py            # Diffusion sampler
+│   ├── ebm.py                  # EBM sampler
+│   ├── utils.py                # Helper functions
+│   └── data_loader.py          # Data loading
+├── models/                     # Saved checkpoints
 ├── requirements.txt
 ├── pyproject.toml
 └── README.md
+
 
 🛠 Installation
 1️⃣ Clone the repository
@@ -139,13 +137,6 @@ Module 6 – GAN + API integration
 Module 7 – Deployment & multi-model API
 
 Module 8 – Diffusion + EBM + API endpoints
-
-Your implementation fulfills all required functionalities:
-✔ FastAPI endpoints
-✔ Generator + trainer integrations
-✔ Multi-model support
-✔ Clean project structure
-✔ Docker deployment-ready
 
 🙌 Acknowledgements
 

@@ -1560,12 +1560,12 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.0" },
-    { name = "matplotlib", specifier = ">=3.10.7" },
+    { name = "matplotlib", specifier = ">=3.8.0" },
     { name = "pillow", specifier = ">=10.0.0" },
     { name = "pydantic", specifier = ">=2.8.0" },
     { name = "torch", specifier = ">=2.2.0" },
     { name = "torchvision", specifier = ">=0.17.0" },
-    { name = "tqdm", specifier = ">=4.67.1" },
+    { name = "tqdm", specifier = ">=4.66.0" },
 ]
 
 [[package]]
