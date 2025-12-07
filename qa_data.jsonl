@@ -1,0 +1,5 @@
+{"question": "What is reinforcement learning?", "answer": "Reinforcement learning is a method where an agent learns by interacting with an environment and receiving rewards."}
+{"question": "What is a policy?", "answer": "A policy is a rule or strategy that defines the agent's actions at each state."}
+{"question": "What is a value function?", "answer": "A value function estimates how good a state or action is in terms of expected future rewards."}
+{"question": "What is the reward signal?", "answer": "The reward signal tells the agent how well it is performing the task."}
+{"question": "What is exploration?", "answer": "Exploration refers to trying new actions to discover better strategies."}
