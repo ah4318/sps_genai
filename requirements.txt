@@ -5,3 +5,6 @@ torchvision>=0.17.0
 pillow>=10.0.0
 tqdm>=4.66.0
 matplotlib>=3.8.0
+transformers>=4.46.0
+datasets>=3.0.0
+accelerate>=1.0.0
