@@ -1,18 +1,18 @@
-🚀 SPS GenAI Multi-Model API
+**SPS GenAI Multi-Model API**
 
 A unified FastAPI service integrating all models developed across Modules 4–8.
 
 This project combines multiple deep learning models into a single, unified API service.
 All models can be accessed through FastAPI endpoints, allowing flexible experimentation and interaction.
 
-📌 Implemented Models
-🔤 1. Bigram Text Generator
+**Implemented Models**
+1. Bigram Text Generator
 
 A character-level Bigram language model that predicts the next token based on frequency statistics.
 
 Endpoint: POST /bigram/next
 
-🧠 2. Word Embeddings & Similarity (spaCy)
+2. Word Embeddings & Similarity (spaCy)
 
 Includes two features:
 
@@ -26,13 +26,13 @@ POST /embedding
 
 POST /similarity
 
-🖼️ 3. CIFAR-10 CNN Classifier
+3. CIFAR-10 CNN Classifier
 
 A convolutional neural network trained on CIFAR-10 to classify uploaded images.
 
 Endpoint: POST /classify
 
-🎨 4. GAN (Training + Sampling)
+4. GAN (Training + Sampling)
 
 Implements a basic Generative Adversarial Network with:
 
@@ -46,19 +46,19 @@ POST /gan/train
 
 GET /gan/generate
 
-🌫️ 5. Diffusion Model (DDPM-style Sampling)
+5. Diffusion Model (DDPM-style Sampling)
 
 A simplified diffusion sampling process to generate images from noise.
 
 Endpoint: GET /diffusion/generate
 
-⚡ 6. Energy-Based Model (EBM)
+6. Energy-Based Model (EBM)
 
 Generates samples using Langevin dynamics based on an energy function.
 
 Endpoint: GET /ebm/generate
 
-📡 API Summary Table
+**API Summary Table**
 Category	Method	Endpoint	Description
 Bigram	POST	/bigram/next	Predict next token
 Embedding	POST	/embedding	Get word vector
@@ -68,7 +68,7 @@ GAN	POST	/gan/train	Train GAN
 GAN	GET	/gan/generate	Generate sample
 Diffusion	GET	/diffusion/generate	DDPM sampling
 EBM	GET	/ebm/generate	Sample via EBM
-📁 Project Structure
+**Project Structure**
 sps_genai/
 │
 ├── app/
@@ -91,22 +91,22 @@ sps_genai/
 ├── requirements.txt
 └── README.md                # (this file)
 
-▶️ How to Run the API
-1️⃣ Install Dependencies
+**How to Run the API**
+1. Install Dependencies
 pip install -r requirements.txt
 
-2️⃣ Start the FastAPI Server
+2. Start the FastAPI Server
 uvicorn app.main:app --reload
 
-3️⃣ Open the Interactive API Documentation
+3. Open the Interactive API Documentation
 
 Once the server is running, open:
 
-👉 http://127.0.0.1:8000/docs
+-> http://127.0.0.1:8000/docs
 
 This automatically generates a full API interface via Swagger UI.
 
-🧪 Example Outputs (Optional)
+**Example Outputs (Optional)**
 
 You may include sample output images from your models:
 
@@ -116,21 +116,7 @@ You may include sample output images from your models:
 ## EBM Sample
 ![EBM Sample](ebm_output.png)
 
-🎓 Assignment Coverage
-
-This project fully implements the requirements across Modules 4–8:
-
-Module 4: CNN classifier
-
-Module 5: VAE (integrated into helper_lib)
-
-Module 6: GAN training + sampling
-
-Module 7: FastAPI service exposing ML endpoints
-
-Module 8: Diffusion and EBM samplers
-
-🙌 Acknowledgements
+**Acknowledgements**
 
 Course: Columbia University — SPS Applied Machine Learning / Deep Learning
 Instructor: Maryam Fazel-Zarandi
