@@ -116,6 +116,20 @@ You may include sample output images from your models:
 ## EBM Sample
 ![EBM Sample](ebm_output.png)
 
+### Model Files Notice
+
+The fine-tuned GPT-2 model (checkpoint-6000 and gpt2-qa-rl) is too large
+to upload to GitHub. These files are NOT included in the repository.
+
+To run the full model:
+1. Place the model folder inside /code inside the container, OR
+2. Mount the folder during docker run:
+   docker run -p 80:80 -v /path/to/model:/code/model sps_api
+
+The FastAPI server will start even without the model, but the
+GPT-2 endpoints will not respond until the model files are present.
+
+
 **Acknowledgements**
 
 Course: Columbia University — SPS Applied Machine Learning / Deep Learning
