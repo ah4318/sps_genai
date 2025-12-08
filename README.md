@@ -1,143 +1,136 @@
-🌐 SPS GenAI Multi-Model API
+🚀 SPS GenAI Multi-Model API
 
-A modular FastAPI application integrating multiple deep learning and generative models developed across SPS modules (4–8).
-This project unifies text generation, embeddings, classification, GAN, VAE, Diffusion, and EBM sampling under a single API, fully containerized with Docker.
+A unified FastAPI service integrating all models developed across Modules 4–8.
 
-🚀 Features Overview
+This project combines multiple deep learning models into a single, unified API service.
+All models can be accessed through FastAPI endpoints, allowing flexible experimentation and interaction.
+
+📌 Implemented Models
 🔤 1. Bigram Text Generator
 
-Generates text based on a simple character-level bigram language model.
-Endpoint: POST /generate
+A character-level Bigram language model that predicts the next token based on frequency statistics.
 
-🧠 2. Word Embedding / Similarity (spaCy)
+Endpoint: POST /bigram/next
 
-Uses en_core_web_lg to compute word embeddings and cosine similarity.
+🧠 2. Word Embeddings & Similarity (spaCy)
+
+Includes two features:
+
+Convert any word into a vector representation
+
+Compute cosine similarity between two words
+
 Endpoints:
 
 POST /embedding
 
 POST /similarity
 
-🖼️ 3. CNN Image Classifier (CIFAR10)
+🖼️ 3. CIFAR-10 CNN Classifier
 
-A Convolutional Neural Network trained on CIFAR-10 for image recognition.
+A convolutional neural network trained on CIFAR-10 to classify uploaded images.
+
 Endpoint: POST /classify
 
-🎨 4. GAN (Generative Adversarial Network)
+🎨 4. GAN (Training + Sampling)
 
-Implements a generator + discriminator for generating synthetic images.
+Implements a basic Generative Adversarial Network with:
+
+A standalone training loop
+
+Sampling using the trained generator
+
 Endpoints:
 
 POST /gan/train
 
 GET /gan/generate
 
-🌀 5. VAE (Variational Autoencoder)
+🌫️ 5. Diffusion Model (DDPM-style Sampling)
 
-Supports latent-space sampling + image reconstruction.
-Endpoint: Available via helper library
+A simplified diffusion sampling process to generate images from noise.
 
-🌫️ 6. Diffusion Model (Simplified DDPM Sampler)
+Endpoint: GET /diffusion/generate
 
-A lightweight implementation of denoising diffusion sampling.
-Endpoint:
+⚡ 6. Energy-Based Model (EBM)
 
-GET /diffusion/generate
+Generates samples using Langevin dynamics based on an energy function.
 
-⚡ 7. Energy-Based Model (EBM)
+Endpoint: GET /ebm/generate
 
-Implements Langevin dynamics to iteratively reduce energy of images.
-Endpoint:
-
-GET /ebm/generate
-
-🌐 API Endpoints Summary
+📡 API Summary Table
 Category	Method	Endpoint	Description
-Text	POST	/generate	Generate text with Bigram model
-Embedding	POST	/embedding	Get embedding for a word
-Similarity	POST	/similarity	Compute similarity between two words
-Classification	POST	/classify	Classify an uploaded image (CNN)
-GAN	POST	/gan/train	Train GAN model
-GAN	GET	/gan/generate	Generate GAN samples
-Diffusion	GET	/diffusion/generate	Generate images using Diffusion model
-EBM	GET	/ebm/generate	Generate images using EBM sampler
-
+Bigram	POST	/bigram/next	Predict next token
+Embedding	POST	/embedding	Get word vector
+Similarity	POST	/similarity	Compute cosine similarity
+Classification	POST	/classify	CIFAR-10 image classification
+GAN	POST	/gan/train	Train GAN
+GAN	GET	/gan/generate	Generate sample
+Diffusion	GET	/diffusion/generate	DDPM sampling
+EBM	GET	/ebm/generate	Sample via EBM
+📁 Project Structure
 sps_genai/
+│
 ├── app/
-│   └── main.py                 # FastAPI routes
-├── bigram_model.py             # Bigram text model
-├── classifier.py               # CNN classifier
-├── helper_lib/
-│   ├── model.py                # CNN, VAE, GAN, Diffusion, EBM definitions
-│   ├── trainer.py              # Training loops
-│   ├── generator.py            # Sampling utilities
-│   ├── diffusion.py            # Diffusion sampler
-│   ├── ebm.py                  # EBM sampler
-│   ├── utils.py                # Helper functions
-│   └── data_loader.py          # Data loading
-├── models/                     # Saved checkpoints
+│   └── main.py              # FastAPI application and API endpoints
+│
+├── bigram_model.py          # Bigram text generation model
+├── classifier.py            # CIFAR-10 image classifier
+│
+├── helper_lib/              # Advanced modules from Modules 6–8
+│   ├── model.py             # CNN, GAN, Diffusion, EBM models
+│   ├── trainer.py           # Training loops
+│   ├── generator.py         # Sampling utilities
+│   ├── diffusion.py         # Diffusion sampling implementation
+│   ├── ebm.py               # Energy-based model sampling
+│   ├── utils.py             # Helper functions
+│   └── data_loader.py       # Dataset loaders
+│
+├── models/                  # Saved model weights
+│
 ├── requirements.txt
-├── pyproject.toml
-└── README.md
+└── README.md                # (this file)
 
-
-🛠 Installation
-1️⃣ Clone the repository
-git clone https://github.com/ah4318/sps_genai.git
-cd sps_genai
-
-2️⃣ Install dependencies
-
-Using pip:
-
+▶️ How to Run the API
+1️⃣ Install Dependencies
 pip install -r requirements.txt
 
-
-Or using uv:
-
-uv sync
-
-▶️ Run the API
-
-Using uv:
-
-uv run fastapi dev app/main.py
-
-
-Or uvicorn:
-
+2️⃣ Start the FastAPI Server
 uvicorn app.main:app --reload
 
+3️⃣ Open the Interactive API Documentation
 
-Then open Swagger UI:
+Once the server is running, open:
+
 👉 http://127.0.0.1:8000/docs
 
-🎨 Sample Outputs (Recommended)
+This automatically generates a full API interface via Swagger UI.
 
-You may drop two images into your project root:
-diffusion_output.png, ebm_output.png
-and they will automatically display in the README.
+🧪 Example Outputs (Optional)
 
-## 🖼 Diffusion Model Output
-![Diffusion Output](diffusion_output.png)
+You may include sample output images from your models:
 
-## ⚡ EBM Sampling Output
-![EBM Output](ebm_output.png)
+## Diffusion Sample
+![Diffusion Sample](diffusion_output.png)
 
-🎓 Assignment Notes
+## EBM Sample
+![EBM Sample](ebm_output.png)
 
-This repository contains all components required for the SPS Generative AI assignments:
+🎓 Assignment Coverage
 
-Module 4 – CNN
+This project fully implements the requirements across Modules 4–8:
 
-Module 5 – VAE
+Module 4: CNN classifier
 
-Module 6 – GAN + API integration
+Module 5: VAE (integrated into helper_lib)
 
-Module 7 – Deployment & multi-model API
+Module 6: GAN training + sampling
 
-Module 8 – Diffusion + EBM + API endpoints
+Module 7: FastAPI service exposing ML endpoints
+
+Module 8: Diffusion and EBM samplers
 
 🙌 Acknowledgements
 
-Developed for Columbia University SPS – Applied Machine Learning / Deep Learning Modules.
+Course: Columbia University — SPS Applied Machine Learning / Deep Learning
+Instructor: Maryam Fazel-Zarandi
