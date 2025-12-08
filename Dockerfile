@@ -1,24 +1,27 @@
 # === Base image ===
 FROM python:3.12-slim-bookworm
 
-# === Working directory ===
+# === Install dependencies ===
 WORKDIR /code
 
-# === Install system dependencies ===
+# Install system deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl && rm -rf /var/lib/apt/lists/*
 
-# === Copy everything into the container ===
-COPY . /code
+# Copy dependency files
+COPY requirements.txt /code/
 
-# === Install Python dependencies ===
+# Install Python dependencies via pip (simpler than uv)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# === Ensure Python can import helper_lib & app ===
-ENV PYTHONPATH="/code"
+# === Copy app files ===
+COPY ./app /code/app
+COPY main.py /code/models
 
-# === Expose port ===
+# Expose the port
 EXPOSE 80
 
-# === Run FastAPI using uvicorn ===
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+# === Run FastAPI ===
+CMD ["fastapi", "run", "app/main.py", "--port", "80"]
+
+COPY gpt2-qa /code/gpt2-qa
