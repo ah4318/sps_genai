@@ -1,27 +1,36 @@
-# === Base image ===
-FROM python:3.12-slim-bookworm
+# ---------------------------------------------------------
+# 1. Base Python image
+# ---------------------------------------------------------
+FROM python:3.10-slim
 
-# === Install dependencies ===
+# ---------------------------------------------------------
+# 2. Set working directory
+# ---------------------------------------------------------
 WORKDIR /code
 
-# Install system deps
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl && rm -rf /var/lib/apt/lists/*
-
-# Copy dependency files
+# ---------------------------------------------------------
+# 3. Install dependencies
+# ---------------------------------------------------------
 COPY requirements.txt /code/
-
-# Install Python dependencies via pip (simpler than uv)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# === Copy app files ===
-COPY ./app /code/app
-COPY main.py /code/models
+# ---------------------------------------------------------
+# 4. Copy your application code
+# (all files small enough for GitHub)
+# ---------------------------------------------------------
+COPY app /code/app
+COPY helper_lib /code/helper_lib
+COPY main.py /code/main.py
 
-# Expose the port
-EXPOSE 80
+# ---------------------------------------------------------
+# 5. IMPORTANT:
+# Do NOT COPY local model folders (too large for GitHub)
+# Instructor will manually mount or download model if needed.
+# ---------------------------------------------------------
+# COPY gpt2-qa-rl /code/gpt2-qa-rl    <-- REMOVE THIS
+# COPY checkpoint-6000 /code/checkpoint-6000 <-- REMOVE THIS
 
-# === Run FastAPI ===
-CMD ["fastapi", "run", "app/main.py", "--port", "80"]
-
-COPY gpt2-qa /code/gpt2-qa
+# ---------------------------------------------------------
+# 6. Start FastAPI server
+# ---------------------------------------------------------
+CMD ["fastapi", "run", "main.py", "--port", "80", "--host", "0.0.0.0"]
